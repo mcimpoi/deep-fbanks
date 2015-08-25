@@ -11,7 +11,7 @@ You also have to download the datasets you want to evaluate on, and link to them
 
 Once done, run the `run_experiments.m` file.
 
-In `texture_experiments.m` you could remove (or add) dataset names to the `datasetList` cell. Make sure you adjust the number of splits accordingly. The datasets are specified as `{'dataset_name', <num_splits>}` cells.
+In `run_experiments.m` you could remove (or add) dataset names to the `datasetList` cell. Make sure you adjust the number of splits accordingly. The datasets are specified as `{'dataset_name', <num_splits>}` cells.
 
 ### Dependencies
 
