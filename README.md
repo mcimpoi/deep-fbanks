@@ -16,11 +16,19 @@ In `run_experiments.m` you could remove (or add) dataset names to the `datasetLi
 ### Dependencies
 
 The code relies on [vlfeat](http://www.vlfeat.org/), and [matconvnet](http://www.vlfeat.org/matconvnet), which should be downloaded and built before running the experiments.
-Run git submodule update -i in the repository download folder.
 
-To build `vlfeat`, go to `<deep-fbanks-dir>/vlfeat` and run make; ensure you have MATLAB executable and mex in the path.
+After cloning the `deep-fbanks` repository, run:
+`git submodule update -i`
+in the repository download folder. This will download the matconvnet and vlfeat repositories.
 
-To build `matconvnet`, go to `<deep-fbanks-dir>/matconvnet/matlab` and run `vl_compilenn`; ensure you have CUDA installed, and nvcc in the path.
+To build `vlfeat`, go to `<deep-fbanks-dir>/vlfeat` and run `make` in the shell, before running `vl_setup.m`. ensure you have MATLAB executable and mex in the path.
+
+Ensure you have CUDA installed, and nvcc in $PATH.
+To build `matconvnet`, in MATLAB, go to `<deep-fbanks-dir>/matconvnet/matlab` and run:
+`mex -setup C++`
+`vl_compilenn('enableGPU', true)`
+
+
 
 For LLC features (Table 3 in arxiv paper), please download the code from [http://www.robots.ox.ac.uk/~vgg/software/enceval_toolkit](http://www.robots.ox.ac.uk/~vgg/software/enceval_toolkit) and copy the following to the code folder (no subfolders!)
 
