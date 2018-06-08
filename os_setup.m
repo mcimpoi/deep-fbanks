@@ -29,7 +29,6 @@ opts.vocDir = 'data/VOC2007';
 opts.vocDir12 = 'data/VOC2012';
 opts.writeResults = false;
 opts.compid = 'comp2';
-opts.publishDir = '~/Dropbox/Collaborations/Mircea Cimpoi/cvpr15/figures' ;
 opts.suffix = 'baseline' ;
 opts.prefix = 'v22' ;
 opts.model = 'imagenet-vgg-m.mat';
@@ -92,12 +91,15 @@ end
 % -------------------------------------------------------------------------
 
 for i = 1:numel(models)
-  if ~exist(fullfile('data/models', models{i}))
-    fprintf('downloading model %s\n', models{i}) ;
-    vl_xmkdir('data/models') ;
-    urlwrite(fullfile('http://www.vlfeat.org/matconvnet/models', models{i}),...
-      fullfile('data/models', models{i})) ;
-  end
+    crt_model_path = fullfile('data/models', models{i});
+    vl_xmkdir('data/models');
+    if ~exist(crt_model_path, 'file')
+        fprintf('downloading model %s\n', models{i});
+        urlwrite(fullfile('http://www.vlfeat.org/matconvnet/models', ...
+            models{i}), crt_model_path);
+        % backwards compatibility for the model:
+        fix_load_nn(crt_model_path);
+    end
 end
 
 % -------------------------------------------------------------------------

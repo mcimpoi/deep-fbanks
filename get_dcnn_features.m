@@ -20,10 +20,10 @@ opts.useSIFT = false ;
 opts.crop = true ;
 %opts.scales = [0.5 0.75 1] ; %CUB
 opts.scales = 2.^(1.5:-.5:-3); % as in CVPR14 submission
-opts.encoder = [];
+opts.encoder = struct();
 opts.numSpatialSubdivisions = 1 ;
 opts.maxNumLocalDescriptorsReturned = +inf ;
-opts = vl_argparse(opts, varargin) ;
+opts = fix_vl_argparse(opts, varargin) ;
 
 if (numel(opts.numSpatialSubdivisions) == 1)
     opts.numSpatialSubdivisions = opts.numSpatialSubdivisions * [1 1];
@@ -45,7 +45,7 @@ if opts.useSIFT
   stride = 4;
   border = binSize*2 ;
 else
-  info = vl_simplenn_display(net) ;
+  info = fix_vl_simplenn_display(net) ;
   %vl_simplenn_display(net) ;
   x=1 ;
   %
@@ -53,7 +53,7 @@ else
     x=(x-1)*info.stride(2,l)-info.pad(2,l)+1 ;
   end
   offset = round(x + info.receptiveFieldSize(end)/2 - 0.5);
-  stride = prod(info.stride(1,:)) ;
+  stride = prod(info.stride(1,:));
   border = ceil(info.receptiveFieldSize(end)/2 + 1);
   averageColour = mean(mean(net.normalization.averageImage,1),2) ;
 end
@@ -114,9 +114,18 @@ for k=1:numel(im)
       h = size(res(end).x,1) ;
       descrs = permute(gather(res(end).x), [3 1 2]) ;
       descrs = reshape(descrs, size(descrs,1), []) ;
+      % fixes padding / index out of bounds error.
+      % TODO: needs checking.
+      if offset < 0
+          offset = offset + stride;
+          w = w - 1;
+          h = h - 1;
+      end
+      % seems a bit hacky way -- was w - 1; h - 1;
+      % fixes index out of bounds error.
       [u,v] = meshgrid(...
-        offset + (0:w-1) * stride, ...
-        offset + (0:h-1) * stride) ;
+        offset + (0:w-2) * stride, ...
+        offset + (0:h-2) * stride) ;
     end
 
     u_ = (u - 1) / opts.scales(s) + 1 ;

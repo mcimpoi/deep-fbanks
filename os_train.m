@@ -247,6 +247,11 @@ function [code, area] = encoder_extract_for_segments(encoder, imdb, segmentIds, 
 opts.batchSize = 128 ;
 opts.maxNumLocalDescriptorsReturned = 500 ;
 opts = vl_argparse(opts, varargin) ;
+% Previously, this was, but not compatible with newer versions of matlab
+% numWorkers = matlabpool('size') ;
+% change number according to your configuration
+% using 2 for GPU implementations.
+numWorkers = 2; 
 
 [~,segmentSel] = ismember(segmentIds, imdb.segments.id) ;
 imageIds = unique(imdb.segments.imageId(segmentSel)) ;
@@ -254,15 +259,17 @@ n = numel(imageIds) ;
 
 % prepare batches
 n = ceil(numel(imageIds)/opts.batchSize) ;
-batches = mat2cell(1:numel(imageIds), 1, [opts.batchSize * ones(1, n-1), numel(imageIds) - opts.batchSize*(n-1)]) ;
+batches = mat2cell(1:numel(imageIds), 1, ...
+    [opts.batchSize * ones(1, n-1), ...
+     numel(imageIds) - opts.batchSize*(n-1)]) ;
 batchResults = cell(1, numel(batches)) ;
 
 % just use as many workers as are already available
-numWorkers = matlabpool('size') ;
+maxDescrReturned = opts.maxNumLocalDescriptorsReturned;
 parfor (b = 1:numel(batches), numWorkers)
 %for b = 1:numel(batches)
   batchResults{b} = get_batch_results(imdb, imageIds, batches{b}, ...
-    encoder, opts.maxNumLocalDescriptorsReturned) ;
+    encoder, maxDescrReturned) ;
 end
 
 area = zeros(size(segmentIds)) ;

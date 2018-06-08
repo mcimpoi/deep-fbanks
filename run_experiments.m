@@ -6,6 +6,10 @@ function run_experiments()
   path_model_vgg_vd = 'data/models/imagenet-vgg-verydeep-19.mat';
   path_model_alexnet = 'data/models/imagenet-caffe-alex.mat';
 
+  fix_load_nn(path_model_vgg_m);
+  fix_load_nn(path_model_vgg_vd);
+  fix_load_nn(path_model_alexnet);
+
   % RCNN (FC-CNN) flavors
   rcnn.name = 'rcnn' ;
   rcnn.opts = {...
@@ -77,7 +81,6 @@ function run_experiments()
   encoderList = {{rcnn}, {dcnn}, {dsift}, {rcnn dcnn}, {rcnn dcnn dsift}, {rcnnvd}, {dcnnvd}, {rcnnvd dcnnvd}} ;
   datasetList = {{'kth', 4}, {'fmd',14}, {'dtd',10}, {'voc07',1}, {'mit',1}, {'os',1}} ;
 
-
   for ii = 1 : numel(datasetList)
     dataset = datasetList{ii} ;
 
@@ -89,12 +92,12 @@ function run_experiments()
     end
 
     for jj = 1 : numSplits
-      for ee = 1: numel(encoderList)
+      for ee = 1 : numel(encoderList)
         os_train(...
           'dataset', dataset, ...
           'seed', jj, ...
           'encoders', encoderList{ee}, ...
-          'prefix', 'exp01', ...
+          'prefix', 'exp02', ...
           'suffix', setupNameList{ee}, ...
           'printDatasetInfo', ee == 1, ...
           'writeResults', true, ...
